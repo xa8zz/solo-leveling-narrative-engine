@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling RPG Simulator</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="api-key-modal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Your Gemini API Key</h2>
+            <p>This key is stored locally and never leaves your browser.</p>
+            <input type="password" id="api-key-input" placeholder="Paste your Gemini API key here">
+            <button id="save-api-key">Begin Adventure</button>
+            <p class="info-text">
+                <i class="fas fa-info-circle"></i> 
+                Get a Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <div id="header">
+            <h1>Solo Leveling: Arise</h1>
+            <div id="game-controls">
+                <button id="save-game"><i class="fas fa-save"></i> Save</button>
+                <button id="load-game"><i class="fas fa-folder-open"></i> Load</button>
+                <button id="settings"><i class="fas fa-cog"></i> Settings</button>
+            </div>
+        </div>
+
+        <div id="game-content">
+            <!-- Game State Panel (Left) -->
+            <div id="state-panel">
+                <div id="player-stats">
+                    <h2>Player Status</h2>
+                    <div class="stat-container">
+                        <div class="stat-group">
+                            <div class="stat">
+                                <span class="stat-label">Name:</span>
+                                <span class="stat-value" id="player-name">Sung Jinwoo</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Rank:</span>
+                                <span class="stat-value" id="player-rank">E</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Level:</span>
+                                <span class="stat-value" id="player-level">1</span>
+                            </div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat">
+                                <span class="stat-label">HP:</span>
+                                <div class="progress-container">
+                                    <div class="progress-bar" id="hp-bar"></div>
+                                    <span class="progress-text" id="hp-text">100/100</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">MP:</span>
+                                <div class="progress-container">
+                                    <div class="progress-bar" id="mp-bar"></div>
+                                    <span class="progress-text" id="mp-text">0/0</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">EXP:</span>
+                                <div class="progress-container">
+                                    <div class="progress-bar" id="exp-bar"></div>
+                                    <span class="progress-text" id="exp-text">0/100</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="attributes">
+                        <h3>Attributes</h3>
+                        <div class="attribute">
+                            <span class="attribute-label">STR:</span>
+                            <span class="attribute-value" id="str-value">10</span>
+                        </div>
+                        <div class="attribute">
+                            <span class="attribute-label">AGI:</span>
+                            <span class="attribute-value" id="agi-value">10</span>
+                        </div>
+                        <div class="attribute">
+                            <span class="attribute-label">INT:</span>
+                            <span class="attribute-value" id="int-value">10</span>
+                        </div>
+                        <div class="attribute">
+                            <span class="attribute-label">SENSE:</span>
+                            <span class="attribute-value" id="sense-value">10</span>
+                        </div>
+                        <div class="attribute">
+                            <span class="attribute-label">VIT:</span>
+                            <span class="attribute-value" id="vit-value">10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="inventory">
+                    <h2>Inventory</h2>
+                    <div id="gold-display">
+                        <i class="fas fa-coins"></i> <span id="gold-amount">0</span> Gold
+                    </div>
+                    <div id="inventory-items">
+                        <!-- Items will be added dynamically -->
+                    </div>
+                </div>
+
+                <div id="quests">
+                    <h2>Quests</h2>
+                    <div id="current-quest">
+                        <h3>Current</h3>
+                        <div id="quest-description">Welcome to the System</div>
+                    </div>
+                    <div id="completed-quests">
+                        <h3>Completed</h3>
+                        <ul id="completed-quest-list">
+                            <!-- Completed quests will be added here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Story Panel (Right) -->
+            <div id="story-panel">
+                <div id="scene-image-container">
+                    <div id="scene-image"></div>
+                    <div id="image-loading" class="hidden">
+                        <div class="spinner"></div>
+                        <p>Generating scene image...</p>
+                    </div>
+                </div>
+                
+                <div id="narrative-container">
+                    <!-- Narrative text will be added here -->
+                </div>
+
+                <div id="player-input">
+                    <div id="loading-indicator" class="hidden">
+                        <div class="spinner"></div>
+                    </div>
+                    <form id="player-action-form">
+                        <input type="text" id="player-action-input" placeholder="What will you do?">
+                        <button type="submit" id="submit-action">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Settings</h2>
+            <div class="settings-group">
+                <h3>Text Speed</h3>
+                <div class="slider-container">
+                    <input type="range" id="text-speed" min="1" max="100" value="50">
+                    <span id="text-speed-value">Normal</span>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Image Generation</h3>
+                <select id="image-frequency">
+                    <option value="always">Always</option>
+                    <option value="major-scenes" selected>Major Scenes Only</option>
+                    <option value="never">Never</option>
+                </select>
+            </div>
+            <div class="settings-group">
+                <h3>API Key</h3>
+                <button id="update-api-key">Update API Key</button>
+            </div>
+            <button id="settings-close-btn" class="close-button">Close</button>
+        </div>
+    </div>
+
+    <!-- Game Initialization Scripts -->
+    <script src="js/utils/apiKeyManager.js"></script>
+    <script src="js/state/gameState.js"></script>
+    <script src="js/ui/uiManager.js"></script>
+    
+    <!-- Model Scripts -->
+    <script src="js/models/geminiApiClient.js"></script>
+    <script src="js/models/modelManager.js"></script>
+    
+    <!-- Utility Scripts -->
+    <script src="js/utils/toolFunctions.js"></script>
+    <script src="js/utils/settingsManager.js"></script>
+    
+    <!-- Main Game Logic -->
+    <script src="js/gameManager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
